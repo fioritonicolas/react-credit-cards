@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Payment from 'payment';
+import cardHelper from './card-helper';
 
 class ReactCreditCards extends React.Component {
   constructor(props) {
@@ -12,8 +12,6 @@ class ReactCreditCards extends React.Component {
         maxLength: 16,
       },
     };
-
-    this.setCards();
   }
 
   static propTypes = {
@@ -156,28 +154,10 @@ class ReactCreditCards extends React.Component {
     return `${month}/${year}`;
   }
 
-  setCards(props = this.props) {
-    const { acceptedCards } = props;
-    let newCardArray = [];
-
-    if (acceptedCards.length) {
-      Payment.getCardArray()
-        .forEach(d => {
-          if (acceptedCards.includes(d.type)) {
-            newCardArray.push(d);
-          }
-        });
-    }
-    else {
-      newCardArray = newCardArray.concat(Payment.getCardArray());
-    }
-
-    Payment.setCardArray(newCardArray);
-  }
-
   updateType(number) {
     const { callback } = this.props;
-    const type = Payment.fns.cardType(number) || 'unknown';
+    // const type = Payment.fns.cardType(number) || 'unknown';
+    const type = cardHelper.getCardType(number);
 
     let maxLength = 16;
 
@@ -195,7 +175,7 @@ class ReactCreditCards extends React.Component {
       issuer: type,
       maxLength,
     };
-    const isValid = Payment.fns.validateCardNumber(number);
+    const isValid = cardHelper.isCardNumberValid(number); // Payment.fns.validateCardNumber(number);
 
     this.setState({
       type: typeState,
